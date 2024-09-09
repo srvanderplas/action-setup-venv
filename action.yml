@@ -2,10 +2,6 @@ name: 'venv setup'
 description: 'configures venv, python and caches'
 
 inputs:
-  python-version:
-    description: "Version range or exact version of Python or PyPy to use, using SemVer's version range syntax."
-    required: false
-    type: string
   python-version-file:
     description: "File containing the Python version to use. Example: .python-version"
     required: false
@@ -16,7 +12,7 @@ inputs:
   venv-dir:
     default: 'venv'
   install-cmd:
-    default: 'python3 -m pip install -r requirements.txt'
+    default: 'python3 -m pip install -r ${{ inputs.cache-dependency-path }}'
     description: 'Command to install python dependencies.'
 
 outputs:
@@ -31,15 +27,10 @@ outputs:
 runs:
   using: 'composite'
   steps:
-    - name: Handle python version options
-      if: github.event.inputs.python-version-file == '' && github.event.inputs.python-version != ''
-      steps:
-        - run: echo ${{ inputs.python-version }} > .python-version
 
     - uses: actions/setup-python@v5  # v5.0.0
       id: setup-python
       with:
-        python-version: ${{ inputs.python-version }}
         python-version-file: ${{ inputs.python-version-file }}
 
 
@@ -52,7 +43,8 @@ runs:
         path: ${{ inputs.venv-dir }}
         key: setup-venv-${{ runner.os }}-py-${{ steps.setup-python.outputs.python-version }}-${{ steps.setup-python.outputs.python-path }}-${{ hashFiles(inputs.cache-dependency-path) }}-${{ inputs.install-cmd }}
 
-    - run: python3 -m venv ${{ inputs.venv-dir }}
+    - run: |
+        python3 -m venv ${{ inputs.venv-dir }}
       if: steps.cache-venv.outputs.cache-hit != 'true'
       shell: bash
 
@@ -60,6 +52,8 @@ runs:
         source ${{ inputs.venv-dir }}/bin/activate
         echo "VIRTUAL_ENV=${VIRTUAL_ENV}" >> $GITHUB_ENV
         echo "${VIRTUAL_ENV}/bin" >> $GITHUB_PATH
+        echo "PYTHON_PATH=${VIRTUAL_ENV}/bin" >> "$GITHUB_OUTPUT"
+        echo "PYTHON_VERSION=${python --version}" >> "$GITHUB_OUTPUT"
       shell: bash
 
     - run: ${{ inputs.install-cmd }}

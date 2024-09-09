@@ -4,31 +4,49 @@ description: 'configures venv, python and caches'
 inputs:
   python-version:
     description: "Version range or exact version of Python or PyPy to use, using SemVer's version range syntax."
+    required: false
+    type: string
+  python-version-file:
+    description: "File containing the Python version to use. Example: .python-version"
+    required: false
+    type: string
   cache-dependency-path:
     description: "Requirement files to install. Can be a glob pattern."
     default: '**/requirements*.txt'
   venv-dir:
-    default: '.venv'
+    default: 'venv'
   install-cmd:
+    default: 'python3 -m pip install -r requirements.txt'
     description: 'Command to install python dependencies.'
 
 outputs:
   cache-hit:
     description: "A boolean value to indicate if a cache was restored"
     value: ${{ steps.cache-venv.outputs.cache-hit }}
+  python-version:
+    description: "The installed Python or PyPy version. Useful when given a version range as input."
+  python-path:
+    description: "The absolute path to the Python or PyPy executable."
 
 runs:
   using: 'composite'
   steps:
-    - uses: actions/setup-python@0a5c61591373683505ea898e09a3ea4f39ef2b9c  # v5.0.0
+    - name: Handle python version options
+      if: github.event.inputs.python-version-file == '' && github.event.inputs.python-version != ''
+      steps:
+        - run: echo ${{ inputs.python-version }} > .python-version
+
+    - uses: actions/setup-python@v5  # v5.0.0
       id: setup-python
       with:
         python-version: ${{ inputs.python-version }}
+        python-version-file: ${{ inputs.python-version-file }}
+
 
     - run: echo '::remove-matcher owner=python::'
       shell: bash
 
-    - uses: actions/cache@13aacd865c20de90d75de3b17ebe84f7a17d57d2  # v4.0.0
+    - uses: actions/cache@v4  # v4.0.0
       id: cache-venv
       with:
         path: ${{ inputs.venv-dir }}
@@ -47,3 +65,4 @@ runs:
     - run: ${{ inputs.install-cmd }}
       if: inputs.install-cmd != '' && steps.cache-venv.outputs.cache-hit != 'true'
       shell: bash
+

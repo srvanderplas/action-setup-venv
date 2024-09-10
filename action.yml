@@ -25,6 +25,8 @@ outputs:
     description: "The absolute path to the Python or PyPy executable."
   reticulate-python:
     description: "Path to a python binary for reticulate to use."
+  venv-path:
+    description: "Path to virtual environment folder"
 
 runs:
   using: 'composite'
@@ -55,6 +57,7 @@ runs:
         echo "VIRTUAL_ENV=${VIRTUAL_ENV}" >> $GITHUB_ENV
         echo "RETICULATE_PYTHON=${VIRTUAL_ENV}/bin/python3" >> $GITHUB_ENV
         echo "${VIRTUAL_ENV}/bin" >> $GITHUB_PATH
+        echo "VENV_PATH=${VIRTUAL_ENV}" >> "$GITHUB_OUTPUT"
         echo "PYTHON_PATH=${VIRTUAL_ENV}/bin" >> "$GITHUB_OUTPUT"
         echo "RETICULATE_PYTHON=${VIRTUAL_ENV}/bin/python3" >> "$GITHUB_OUTPUT"
         echo "PYTHON_VERSION=$(python --version)" >> "$GITHUB_OUTPUT"

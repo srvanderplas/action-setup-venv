@@ -53,7 +53,7 @@ runs:
         echo "VIRTUAL_ENV=${VIRTUAL_ENV}" >> $GITHUB_ENV
         echo "${VIRTUAL_ENV}/bin" >> $GITHUB_PATH
         echo "PYTHON_PATH=${VIRTUAL_ENV}/bin" >> "$GITHUB_OUTPUT"
-        echo "PYTHON_VERSION=${python --version}" >> "$GITHUB_OUTPUT"
+        echo "PYTHON_VERSION=$(python --version)" >> "$GITHUB_OUTPUT"
       shell: bash
 
     - run: ${{ inputs.install-cmd }}

@@ -12,7 +12,7 @@ inputs:
   venv-dir:
     default: 'venv'
   install-cmd:
-    default: 'python3 -m pip install -r '
+    default: 'python3 -m pip install -r **requirements*.txt'
     description: 'Command to install python dependencies.'
 
 outputs:
@@ -56,7 +56,7 @@ runs:
         echo "PYTHON_VERSION=${python --version}" >> "$GITHUB_OUTPUT"
       shell: bash
 
-    - run: ${{ inputs.install-cmd }} ${{ inputs.cache-dependency-path }}
+    - run: ${{ inputs.install-cmd }}
       if: inputs.install-cmd != '' && steps.cache-venv.outputs.cache-hit != 'true'
       shell: bash
 

@@ -12,7 +12,7 @@ inputs:
   venv-dir:
     default: 'venv'
   install-cmd:
-    default: 'python3 -m pip install -r **requirements*.txt'
+    default: 'if ! test -f **requirements*.txt; then echo "No requirements files" else python3 -m pip install -r **requirements*.txt fi'
     description: 'Command to install python dependencies.'
 
 outputs:

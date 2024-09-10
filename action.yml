@@ -51,6 +51,7 @@ runs:
     - run: |
         source ${{ inputs.venv-dir }}/bin/activate
         echo "VIRTUAL_ENV=${VIRTUAL_ENV}" >> $GITHUB_ENV
+        echo "RETICULATE_PYTHON=${VIRTUAL_ENV}/bin/python3" >> $GITHUB_ENV
         echo "${VIRTUAL_ENV}/bin" >> $GITHUB_PATH
         echo "PYTHON_PATH=${VIRTUAL_ENV}/bin" >> "$GITHUB_OUTPUT"
         echo "PYTHON_VERSION=$(python --version)" >> "$GITHUB_OUTPUT"
